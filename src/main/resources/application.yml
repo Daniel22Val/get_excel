@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: get_excel
+  jpa:
+    hibernate:
+      ddl-auto: none
+  datasource:
+    url: jdbc:mysql://139.180.144.197:3306/live_lacak_temp
+    username: spxspx
+    password: Lacak!235
