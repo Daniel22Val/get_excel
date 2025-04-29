@@ -43,6 +43,8 @@ public class LocationService {
             newEntity.setHash("a51e2d17f4165e46927fd75bfe7365cd");
             newEntity.setLabel(zone.getLabel());
             newEntity.setType(zone.getType());
+            newEntity.setAddress(zone.getAddress());
+            newEntity.setColor(zone.getColor());
 
             if (zone.getRadius() != null)
                 newEntity.setRadius(zone.getRadius());
@@ -57,6 +59,18 @@ public class LocationService {
                 newEntity.setBoundSeLng(zone.getBounds().getSe().getLng());
                 newEntity.setBoundNwLat(zone.getBounds().getNw().getLat());
                 newEntity.setBoundNwLng(zone.getBounds().getNw().getLng());
+            }
+
+            if (zone.getTags() != null) {
+                String tags = "";
+
+                for (Integer tag : zone.getTags()) {
+                    tags += String.valueOf(tag) + ",";
+                }
+
+                String eraseLastColon = tags.substring(0, tags.length() - 1);
+                newEntity.setTags(eraseLastColon);
+
             }
 
             zoneRepository.save(newEntity);
@@ -190,6 +204,18 @@ public class LocationService {
 
         dto.setCenter(center);
         dto.setBounds(bound);
+
+        if (entity.getTags() != null) {
+
+            String [] tagStr = entity.getTags().split(",");
+            List<Integer> tags = new ArrayList<>();
+            for (String tag : tagStr) {
+                Integer tagInt = Integer.parseInt(tag);
+                tags.add(tagInt);
+            }
+            dto.setTags(tags);
+        }
+
         return dto;
     }
 

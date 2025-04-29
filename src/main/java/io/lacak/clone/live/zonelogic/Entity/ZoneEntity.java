@@ -29,6 +29,9 @@ public class ZoneEntity {
     @Column(name = "color")
     private String color;
 
+    @Column(name = "tags")
+    private String tags;
+
     @Column(name = "type")
     private String type;
 
