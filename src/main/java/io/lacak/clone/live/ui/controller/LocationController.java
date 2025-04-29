@@ -4,9 +4,12 @@ import io.lacak.clone.live.zonelogic.LocationService;
 import io.lacak.clone.live.zonelogic.dto.XyzResponseDto;
 import io.lacak.clone.live.zonelogic.dto.ZoneResponseDto;
 import io.lacak.clone.live.zonelogic.reponse.ZoneCustomResponse;
+import io.lacak.clone.live.zonelogic.request.ZoneRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,24 +31,26 @@ public class LocationController {
         return ResponseEntity.ok("done");
     }
 
-    @GetMapping("/db")
-    public ResponseEntity<XyzResponseDto<ZoneCustomResponse>> getZoneNew(@RequestParam String hash,
-        @RequestParam Double lat, @RequestParam Double lng) {
+    @PostMapping("/db")
+    public ResponseEntity<XyzResponseDto<ZoneCustomResponse>> getZoneNew(
+        @RequestBody ZoneRequest request) {
 
-        if (hash.equals("Test123") == false) {
+        if (request.getHash().equals("Test123") == false) {
             return null;
         }
-        return ResponseEntity.ok(locationService.findZoneFromDB(lat, lng));
+        return ResponseEntity.ok(locationService.findZoneFromDB(request.getLocation().getLat(),
+            request.getLocation().getLng()));
     }
 
-    @GetMapping("/manual")
-    public ResponseEntity<XyzResponseDto<ZoneResponseDto>> getZoneOld(@RequestParam String hash,
-        @RequestParam Double lat, @RequestParam Double lng) {
+    @PostMapping("/manual")
+    public ResponseEntity<XyzResponseDto<ZoneResponseDto>> getZoneOld(
+        @RequestBody ZoneRequest request) {
 
-        if (hash.equals("Test123") == false) {
+        if (request.getHash().equals("Test123") == false) {
             return null;
         }
-        return ResponseEntity.ok(locationService.findZoneFromApi(lat, lng));
+        return ResponseEntity.ok(locationService.findZoneFromApi(request.getLocation().getLat(),
+            request.getLocation().getLng()));
     }
 
 }
