@@ -6,13 +6,11 @@ import io.lacak.clone.live.zonelogic.dto.XyzResponseDto;
 import io.lacak.clone.live.zonelogic.dto.ZoneResponseDto;
 import io.lacak.clone.live.zonelogic.dto.subDto.BoundLocationDto;
 import io.lacak.clone.live.zonelogic.dto.subDto.LocationDto;
-import io.lacak.clone.live.zonelogic.reponse.ZoneCustomResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -67,9 +65,9 @@ public class LocationService {
         log.info("DONE");
     }
 
-    public XyzResponseDto<ZoneCustomResponse> findZoneFromDB (Double lat, Double lng) {
+    public XyzResponseDto<ZoneResponseDto> findZoneFromDB (Double lat, Double lng) {
         List<ZoneEntity> zoneEntityList = zoneRepository.findAllByHash("a51e2d17f4165e46927fd75bfe7365cd");
-        List<ZoneCustomResponse> zoneResponseList = new ArrayList<>();
+        List<ZoneResponseDto> zoneResponseList = new ArrayList<>();
 
         for (ZoneEntity zone : zoneEntityList) {
 
@@ -79,9 +77,8 @@ public class LocationService {
                 center.setLng(zone.getCenterLng());
 
                 if (calculateHaversineDistance(zone.getRadius(), lat, lng, center)) {
-                    ZoneCustomResponse response = new ZoneCustomResponse();
-                    BeanUtils.copyProperties(zone, response);
-                    zoneResponseList.add(response);
+                    ZoneResponseDto zoneResponseDto = toApiResponseFromDb(zone);
+                    zoneResponseList.add(zoneResponseDto);
                 }
             } else if (zone.getType().equalsIgnoreCase("polygon")) {
 
@@ -98,16 +95,15 @@ public class LocationService {
                 boundDto.setSe(se);
 
                 if (isWithinBound(lat, lng, boundDto)) {
-                    ZoneCustomResponse response = new ZoneCustomResponse();
-                    BeanUtils.copyProperties(zone, response);
-                    zoneResponseList.add(response);
+                    ZoneResponseDto zoneResponseDto = toApiResponseFromDb(zone);
+                    zoneResponseList.add(zoneResponseDto);
                 }
             }
         }
 
-        XyzResponseDto<ZoneCustomResponse> responseDto = new XyzResponseDto<>();
+        XyzResponseDto<ZoneResponseDto> responseDto = new XyzResponseDto<>();
         responseDto.setList(zoneResponseList);
-        responseDto.setCount(zoneEntityList.size());
+        responseDto.setCount(zoneResponseList.size());
         responseDto.setSuccess(true);
         return responseDto;
     }
@@ -165,6 +161,36 @@ public class LocationService {
             endLatRadius) * Math.pow(Math.sin(distanceLon / 2), 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         return EARTH_RADIUS * c;
+    }
+
+    private ZoneResponseDto toApiResponseFromDb (ZoneEntity entity) {
+        ZoneResponseDto dto = new ZoneResponseDto();
+        dto.setId(entity.getId());
+        dto.setLabel(entity.getLabel());
+        dto.setAddress(entity.getAddress());
+        dto.setColor(entity.getColor());
+        dto.setRadius(entity.getRadius());
+        dto.setType(entity.getType());
+
+        LocationDto center = new LocationDto();
+        center.setLat(entity.getCenterLat());
+        center.setLng(entity.getCenterLng());
+
+        BoundLocationDto bound = new BoundLocationDto();
+        LocationDto se = new LocationDto();
+        LocationDto nw = new LocationDto();
+
+        se.setLat(entity.getBoundSeLat());
+        se.setLng(entity.getBoundSeLng());
+        nw.setLat(entity.getBoundNwLat());
+        nw.setLng(entity.getBoundNwLng());
+
+        bound.setSe(se);
+        bound.setNw(nw);
+
+        dto.setCenter(center);
+        dto.setBounds(bound);
+        return dto;
     }
 
 }

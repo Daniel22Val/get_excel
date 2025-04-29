@@ -3,7 +3,6 @@ package io.lacak.clone.live.ui.controller;
 import io.lacak.clone.live.zonelogic.LocationService;
 import io.lacak.clone.live.zonelogic.dto.XyzResponseDto;
 import io.lacak.clone.live.zonelogic.dto.ZoneResponseDto;
-import io.lacak.clone.live.zonelogic.reponse.ZoneCustomResponse;
 import io.lacak.clone.live.zonelogic.request.ZoneRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +31,7 @@ public class LocationController {
     }
 
     @PostMapping("/db")
-    public ResponseEntity<XyzResponseDto<ZoneCustomResponse>> getZoneNew(
+    public ResponseEntity<XyzResponseDto<ZoneResponseDto>> getZoneNew(
         @RequestBody ZoneRequest request) {
 
         if (request.getHash().equals("Test123") == false) {

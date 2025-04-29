@@ -23,6 +23,12 @@ public class ZoneEntity {
     @Column(name = "label")
     private String label;
 
+    @Column(name = "address")
+    private String address;
+
+    @Column(name = "color")
+    private String color;
+
     @Column(name = "type")
     private String type;
 
