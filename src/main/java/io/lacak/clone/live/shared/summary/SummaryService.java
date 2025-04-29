@@ -58,6 +58,7 @@ public class SummaryService {
         FieldConvertExcel<BaseFieldResponse> fieldVertical = new FieldConvertExcel<>(new BaseFieldResponse());
         for (TrackSummaryEntity entity : entityList) {
             String nopol = entity.getNopol();
+            System.out.println(nopol);
             List<TrackDetailEntity> detailList = trackDetailRepository.findBySummary(entity);
             List<TrackListResponse> detailResponse = detailList.stream().map(this::toDetailResponse).toList();
             fieldConvertDetail.exportReportAnotherSheet(workbook, nopol, detailResponse);
